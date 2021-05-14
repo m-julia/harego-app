@@ -46,6 +46,5 @@ namespace Data
         public virtual ICollection<MemberLocation> MemberLocation { get; set; }
         public virtual ICollection<Review> CreatedReviews { get; set; }
         public virtual ICollection<Review> ReceivedReviews { get; set; }
-
     }
 }
