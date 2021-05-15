@@ -14,7 +14,7 @@ namespace Infrastructure.Repositories.Interfaces
         T Get(Guid id);
         ICollection<T> GetAll();
         ICollection<T> Find(Expression<Func<T, bool>> predicate);
-        void Delete(Guid id);
+        void Delete(T entity);
         void SaveChanges();
     }
 }

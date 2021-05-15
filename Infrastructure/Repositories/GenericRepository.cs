@@ -20,9 +20,9 @@ namespace Infrastructure.Repositories
             return context.Add(entity).Entity;
         }
 
-        public virtual void Delete(Guid id)
+        public virtual void Delete(T entity)
         {
-            context.Remove(id);
+            context.Remove(entity);
         }
 
         public virtual ICollection<T> Find(Expression<Func<T, bool>> predicate)
