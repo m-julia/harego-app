@@ -4,7 +4,7 @@ using Infrastructure.Repositories.Interfaces;
 
 namespace Infrastructure.UnitOfWork
 {
-    class UnitOfWork : IUnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
         private DataContext _context;
         public UnitOfWork(DataContext context)
