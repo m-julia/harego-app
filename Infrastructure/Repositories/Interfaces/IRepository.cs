@@ -10,7 +10,7 @@ namespace Infrastructure.Repositories.Interfaces
     public interface IRepository<T>
     {
         T Add(T entity);
-        T Update(T entity);
+        T Update(Guid id, T entity);
         T Get(Guid id);
         ICollection<T> GetAll();
         ICollection<T> Find(Expression<Func<T, bool>> predicate);
