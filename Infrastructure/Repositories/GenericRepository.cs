@@ -45,7 +45,7 @@ namespace Infrastructure.Repositories
             context.SaveChanges();
         }
 
-        public virtual T Update(T entity)
+        public virtual T Update(Guid id, T entity)
         {
             return context.Update(entity).Entity;
         }

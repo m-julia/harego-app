@@ -1,70 +1,49 @@
-﻿using API.DTO;
-using AutoMapper;
+﻿using AutoMapper;
 using Data;
 using Infrastructure.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
-
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class MemberController : ControllerBase
+    public class AdvertisementController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public MemberController(IUnitOfWork unitOfWork, IMapper mapper)
+        public AdvertisementController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
-        [HttpGet]
-        public IActionResult GetMembers()
+        [AllowAnonymous]
+        [HttpGet, Route("api/[controller]")]
+        public IActionResult GetAdvertisements()
         {
             try
             {
-                return Ok(_unitOfWork.MemberRepository.GetAll());
+                return Ok(_unitOfWork.AdvertisementRepository.GetAll());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
         }
 
-        [HttpGet("{id}")]
-        public IActionResult GetMember(Guid id)
+        [HttpGet, Route("api/[controller]/{id}")]
+        public IActionResult GetAdvertisement(Guid id)
         {
-           try
-           {
-                var member = _unitOfWork.MemberRepository.Get(id);
-
-                if (member == null)
+            try
+            {
+                Advertisement adv = _unitOfWork.AdvertisementRepository.Get(id);
+                if (adv == null)
                     return NotFound();
                 
-                return Ok(member);
-           }
-           catch (Exception ex)
-           {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex);
-            }            
-        }
-
-        [HttpPost]
-        public IActionResult AddMember(Member inModel)
-        {
-            try
-            {
-                if (inModel == null)
-                    return BadRequest();
-
-                Member outModel = _unitOfWork.MemberRepository.Add(inModel);
-                _unitOfWork.SaveChanges();
-
-                return Ok(outModel);
+                return Ok(adv);
             }
             catch (Exception ex)
             {
@@ -72,15 +51,16 @@ namespace API.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult UpdateMember(Guid id, Member inModel)
+        [HttpPost, Route("api/member/{memberId}/[controller]")]
+        public IActionResult AddAdvertisement(Guid memberId, Advertisement inModel)
         {
             try
             {
                 if (inModel == null)
                     return BadRequest();
+                inModel.MemberId = memberId;
 
-                Member outModel = _unitOfWork.MemberRepository.Update(id, inModel);
+                Advertisement outModel = _unitOfWork.AdvertisementRepository.Add(inModel);
                 _unitOfWork.SaveChanges();
                 return Ok(outModel);
             }
@@ -90,17 +70,37 @@ namespace API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public IActionResult DeleteMember(Guid id)
+        [HttpPut, Route("api/member/{memberId}/[controller]/{id}")]
+        public IActionResult Update(Guid memberId, Guid id, Advertisement inModel)
         {
             try
             {
-                var member = _unitOfWork.MemberRepository.Get(id);
+                if (inModel == null)
+                    return BadRequest();
 
-                if (member == null)
+                inModel.MemberId = memberId;
+
+                Advertisement outModel = _unitOfWork.AdvertisementRepository.Update(id, inModel);
+                _unitOfWork.SaveChanges();
+                return Ok(outModel);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex);
+            }
+        }
+
+        [HttpDelete, Route("api/member/{memberId}/[controller]/{id}")]
+        public IActionResult Delete(Guid memberId, Guid id)
+        {
+            try
+            {
+                Advertisement adv = _unitOfWork.AdvertisementRepository.Get(id);
+
+                if (adv == null)
                     return NotFound();
 
-                _unitOfWork.MemberRepository.Delete(member);
+                _unitOfWork.AdvertisementRepository.Delete(adv);
                 _unitOfWork.SaveChanges();
                 return Ok();
             }
@@ -109,6 +109,5 @@ namespace API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex);
             }
         }
-
     }
 }
