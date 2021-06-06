@@ -1,14 +1,14 @@
 ﻿using Data;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 namespace API.DTO
 {
-    public class MemberDTO
+    public class MemberDto
     {
+        [Required]
+        [StringLength(70)]
         public string FirstName { get; set; }
 
         [Required]
@@ -23,6 +23,10 @@ namespace API.DTO
 
         [Required]
         public string Email { get; set; }
+
+        public string Token { get; set; }
+
+        public string Image { get; set; }
 
         [Required]
         public DateTime CreatedAt { get; set; }

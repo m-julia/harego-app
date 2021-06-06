@@ -1,8 +1,10 @@
+using Data;
 using Infrastructure;
 using Infrastructure.Repositories.Interfaces;
 using Infrastructure.UnitOfWork;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,12 +30,19 @@ namespace API
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("HaregoCS")));
             services.AddControllers();
             services.AddCors(opt =>
-           {
+            {
                opt.AddPolicy("CorsPolicy", policy =>
                {
                    policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
                });
-           });
+            });
+            services.AddIdentityCore<Member>(opt =>
+            {
+                opt.Password.RequireNonAlphanumeric = false;
+            })
+            .AddEntityFrameworkStores<DataContext>()
+            .AddSignInManager<SignInManager<Member>>();
+            services.AddAuthentication();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

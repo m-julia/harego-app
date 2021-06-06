@@ -1,10 +1,13 @@
 ﻿using Data;
 using Infrastructure.Configs;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Infrastructure
 {
-    public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<Member, MemberRole, Guid>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
@@ -20,6 +23,8 @@ namespace Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             //Configs
             modelBuilder.ApplyConfiguration(new MemberConfig());
             modelBuilder.ApplyConfiguration(new AdvertisementConfig());
