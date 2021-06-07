@@ -25,15 +25,15 @@ namespace Data
         [StringLength(70)]
         public string LastName { get; set; }
 
-        [Required]
+        
         public DateTime Birthday { get; set; }
 
-        [Required]
+        
         public DateTime CreatedAt { get; set; }
         
         public DateTime? DeletedAt { get; set; }
         
-        [Required]
+        
         public DateTime LastVisitDate { get; set; }
         
         public virtual ICollection<Advertisement> Advertisements { get; set; }

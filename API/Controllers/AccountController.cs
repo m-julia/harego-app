@@ -1,12 +1,15 @@
 ﻿using API.DTO;
 using API.Services;
 using Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace API.Controllers
 {
+    [AllowAnonymous]
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -47,5 +50,43 @@ namespace API.Controllers
 
             return Unauthorized();
         }
+
+        [HttpPost("register")]
+        public async Task<ActionResult<MemberDto>> Register(RegisterDto registerDto)
+        {
+            if (await _memberManager.Users.AnyAsync(x => x.Email == registerDto.Email))
+            {
+                return BadRequest("The Email already exists");
+            }
+
+            var member = new Member
+            {
+                FirstName = registerDto.FirstName,
+                LastName = registerDto.LastName,
+                PhoneNumber = registerDto.PhoneNumber,
+                Email = registerDto.Email,
+                UserName = registerDto.Email
+            };
+
+            var result = await _memberManager.CreateAsync(member, registerDto.Password);
+
+            if (result.Succeeded)
+            {
+                return new MemberDto
+                {
+                    FirstName = member.FirstName,
+                    LastName = member.LastName,
+                    Birthday = member.Birthday,
+                    PhoneNumber = member.PhoneNumber,
+                    Email = member.Email,
+                    Token = _tokenService.CreateToken(member),
+                    Image = null,
+                    
+                };
+            }
+
+            return BadRequest("Problem registering user");
+        }
+
     }
 }
