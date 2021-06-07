@@ -1,4 +1,5 @@
 ﻿using API.DTO;
+using API.Services;
 using Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,13 @@ namespace API.Controllers
     {
         private readonly UserManager<Member> _memberManager;
         private readonly SignInManager<Member> _signInManager;
+        private readonly TokenService _tokenService;
 
-        public AccountController(UserManager<Member> memberManager, SignInManager<Member> signInManager)
+        public AccountController(UserManager<Member> memberManager, SignInManager<Member> signInManager, TokenService tokenService)
         {
             _memberManager = memberManager;
             _signInManager = signInManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("login")]
@@ -35,7 +38,7 @@ namespace API.Controllers
                     Birthday = member.Birthday,
                     PhoneNumber = member.PhoneNumber,
                     Email = member.Email,
-                    Token = "",
+                    Token = _tokenService.CreateToken(member),
                     Image = null,
                     CreatedAt = member.CreatedAt,
                     LastVisitDate = member.LastVisitDate
