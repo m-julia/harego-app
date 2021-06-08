@@ -34,6 +34,18 @@ namespace API
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("HaregoCS")));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt =>
+                {
+                    opt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = securityKey,
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
             services.AddControllers(opt =>
             {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
@@ -46,20 +58,7 @@ namespace API
                    policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:3000");
                });
             });
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
-
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt =>
-                {
-                    opt.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = securityKey,
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
-
+                     
             services.AddIdentityCore<Member>(opt =>
             {
                 opt.Password.RequireNonAlphanumeric = false;

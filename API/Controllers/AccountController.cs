@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace API.Controllers
@@ -34,18 +35,7 @@ namespace API.Controllers
             var result = await _signInManager.CheckPasswordSignInAsync(member, loginDto.Password, false);
             if (result.Succeeded)
             {
-                return new MemberDto
-                {
-                    FirstName = member.FirstName,
-                    LastName = member.LastName,
-                    Birthday = member.Birthday,
-                    PhoneNumber = member.PhoneNumber,
-                    Email = member.Email,
-                    Token = _tokenService.CreateToken(member),
-                    Image = null,
-                    CreatedAt = member.CreatedAt,
-                    LastVisitDate = member.LastVisitDate
-                };
+                return CreateMemberObject(member);
             }
 
             return Unauthorized();
@@ -72,20 +62,34 @@ namespace API.Controllers
 
             if (result.Succeeded)
             {
-                return new MemberDto
-                {
-                    FirstName = member.FirstName,
-                    LastName = member.LastName,
-                    Birthday = member.Birthday,
-                    PhoneNumber = member.PhoneNumber,
-                    Email = member.Email,
-                    Token = _tokenService.CreateToken(member),
-                    Image = null,
-                    
-                };
+                return CreateMemberObject(member);
             }
 
             return BadRequest("Problem registering user");
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<MemberDto>> GetCurrentUser()
+        {
+            var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var member = await _memberManager.FindByEmailAsync(email);
+            return CreateMemberObject(member);
+        }
+
+        private MemberDto CreateMemberObject(Member member)
+        {
+            return new MemberDto
+            {
+                FirstName = member.FirstName,
+                LastName = member.LastName,
+                Birthday = member.Birthday,
+                PhoneNumber = member.PhoneNumber,
+                Email = member.Email,
+                Token = _tokenService.CreateToken(member),
+                Image = null,
+
+            };
         }
 
     }

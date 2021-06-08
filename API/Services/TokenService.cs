@@ -25,9 +25,10 @@ namespace API.Services
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, member.Id.ToString()),
+                new Claim(ClaimTypes.Email, member.Email),
                 new Claim(ClaimTypes.Name, member.LastName),
                 new Claim(ClaimTypes.Name, member.FirstName),
-                new Claim(ClaimTypes.MobilePhone, member.PhoneNumber)
+                
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
