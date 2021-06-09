@@ -34,18 +34,6 @@ namespace API
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddDbContext<DataContext>(x => x.UseSqlServer(Configuration.GetConnectionString("HaregoCS")));
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(opt =>
-                {
-                    opt.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = securityKey,
-                        ValidateIssuer = false,
-                        ValidateAudience = false
-                    };
-                });
             services.AddControllers(opt =>
             {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
@@ -65,8 +53,21 @@ namespace API
             })
             .AddEntityFrameworkStores<DataContext>()
             .AddSignInManager<SignInManager<Member>>();
-
             
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(opt =>
+                {
+                    opt.SaveToken = true;
+                    opt.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = securityKey,
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
+
             services.AddScoped<TokenService>();
         }
 
@@ -81,6 +82,8 @@ namespace API
             app.UseRouting();
 
             app.UseCors("CorsPolicy");
+            
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

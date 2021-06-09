@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-    [AllowAnonymous]
+    
     [ApiController]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -26,6 +26,7 @@ namespace API.Controllers
             _tokenService = tokenService;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<MemberDto>> Login(LoginDto loginDto)
         {
@@ -41,6 +42,7 @@ namespace API.Controllers
             return Unauthorized();
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult<MemberDto>> Register(RegisterDto registerDto)
         {
@@ -72,7 +74,8 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<MemberDto>> GetCurrentUser()
         {
-            var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var t = ClaimTypes.Email;
+            var email = User.FindFirstValue(t);
             var member = await _memberManager.FindByEmailAsync(email);
             return CreateMemberObject(member);
         }

@@ -20,16 +20,18 @@ namespace API.Services
 
         public string CreateToken(Member member)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, member.Id.ToString()),
                 new Claim(ClaimTypes.Email, member.Email),
                 new Claim(ClaimTypes.Name, member.LastName),
                 new Claim(ClaimTypes.Name, member.FirstName),
-                
+
             };
+
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("this is my custom Secret key for authnetication"));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512Signature);
+            
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

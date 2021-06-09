@@ -91,7 +91,7 @@ namespace API.Controllers
         }
 
         [HttpDelete, Route("api/member/{memberId}/[controller]/{id}")]
-        public IActionResult Delete(Guid memberId, Guid id)
+        public IActionResult Delete(Guid id)
         {
             try
             {
